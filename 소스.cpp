@@ -23,12 +23,11 @@ int main(int argc, char* argv[]) {
 		int cnt, outl, lp, lp2, j;
 		void *data;
 		char *out;
-		short *sdata, smax, sdatmp;
+		short *sdata;
 		f = fopen(argv[i], "rb");
 		fread(hdr, 4, 11, f);
 		smpl = hdr[6];
-		dsmpl = static_cast<double>(smpl);
-		div = static_cast<double>(samplingrate) / dsmpl;
+		div = static_cast<double>(samplingrate) / static_cast<double>(smpl);
 		depth = hdr[8] >> 19;
 		count = hdr[10] / depth;
 		data = malloc(hdr[10]);
@@ -40,10 +39,9 @@ int main(int argc, char* argv[]) {
 		lp = 0;
 		sdata = reinterpret_cast<short*>(data);
 		while (cnt < outl) {
-			sdatmp = sdata[static_cast<int>(static_cast<double>(cnt) / div)];
-			lp -= sdatmp;
-			if (0 > lp)out[cnt] = 255, lp+=32767;
-			else out[cnt] = 0, lp-=32768;
+			lp -= sdata[static_cast<int>(static_cast<double>(cnt) / div)];
+			if (0 > lp) out[cnt] = 255, lp+=32767;
+			else out[cnt] = 128, lp-=32768;
 			cnt++;
 		}
 		free(data);
